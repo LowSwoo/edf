@@ -1,7 +1,7 @@
 package models
 
 import (
-	"encoding/binary"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -32,7 +32,7 @@ type Header struct {
 
 type EdfParser struct {
 	Header
-	Body [][]int
+	Body [][]int16
 }
 
 func NewEdfParser(filePath string) (*EdfParser, error) {
@@ -97,20 +97,26 @@ func NewEdfParser(filePath string) (*EdfParser, error) {
 		return header
 	}
 
-	parseBody := func() [][]int {
+	parseBody := func() [][]int16 {
+		read(1)
+		getOneRecord := func() []int16 {
 
-		getOneRecord := func() []int {
-
-			var record = make([]int, nr)
+			var record = make([]int16, nr)
 
 			for i := 0; i < nr; i++ {
-				record[i] = int(binary.BigEndian.Uint32(read(4)))
+				// record[i] = int(binary.BigEndian.Uint16(read(2)))
+				// record[i], _ = strconv.Atoi(fmt.Sprintf("%d", read(2)))
+
+				// tmp := hex.EncodeToString(read(2))
+				tmp, _ := strconv.ParseInt(fmt.Sprintf("%x", read(2)), 16, 32)
+				record[i] = int16(tmp)
+				fmt.Printf("%d\t", record[i])
 			}
 
 			return record
 		}
 
-		var records = make([][]int, ns)
+		var records = make([][]int16, ns)
 
 		for i := 0; i < ns; i++ {
 			records[i] = getOneRecord()

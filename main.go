@@ -8,7 +8,7 @@ import (
 
 func main() {
 
-	var sampleName = "samples/OXY_R_AC.edf"
+	var sampleName = "samples/NASAL L.edf"
 
 	edf, err := models.NewEdfParser(sampleName)
 	if err != nil {
